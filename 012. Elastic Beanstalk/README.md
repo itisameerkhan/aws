@@ -514,3 +514,9 @@ In AWS Elastic Beanstalk, Rolling updates and deployments control how new applic
 ![demo](../ASSETS/demo30.png)
 
 In AWS Elastic Beanstalk, Platform software settings control platform-level features provided by AWS, such as the proxy server, tracing, logging, and environment variables. These options help manage traffic flow, observability, and configuration without changing application code.
+
+
+![demo](../ASSETS/demo31.png)
+![demo](../ASSETS/demo32.png)
+
+When you create an Elastic Beanstalk environment, AWS automatically creates EC2 instances and an Auto Scaling Group (ASG) behind the scenes. Even if you choose a Single instance environment, Elastic Beanstalk still uses an Auto Scaling Group to manage and keep that one instance healthy. 
