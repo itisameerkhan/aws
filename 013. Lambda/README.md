@@ -53,7 +53,7 @@ AWS Lambda automatically provides the exact amount of memory and CPU needed for 
 
 * Better performance for small tasks
 
-### 🔥 3. 3️⃣ Easy to scale (up AND down)
+### 🔥 3. Easy to scale (up AND down)
 
 AWS Lambda automatically handles scaling. If one user visits your site, Lambda runs once. If 1 lakh users visit at the same time, Lambda runs thousands of copies automatically. When traffic reduces, it scales back down without any manual work.
 
