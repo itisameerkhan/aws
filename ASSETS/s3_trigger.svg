@@ -1,0 +1,25 @@
+<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- S3 Bucket -->
+  <g transform="translate(50, 50)">
+    <path d="M10,20 Q40,0 70,20 Q40,40 10,20" fill="#E47911" stroke="#E47911" stroke-width="2"/>
+    <path d="M10,20 V80 Q40,100 70,80 V20" fill="#ff9900" stroke="#E47911" stroke-width="2"/>
+    <text x="40" y="110" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">S3 Bucket</text>
+  </g>
+  
+  <!-- Arrow -->
+  <line x1="140" y1="60" x2="240" y2="60" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="190" y="50" font-family="Arial" font-size="12" text-anchor="middle" fill="#555">Trigger Event</text>
+  
+  <!-- Lambda Function -->
+  <g transform="translate(260, 40)">
+    <rect x="0" y="0" width="60" height="60" rx="10" fill="#FF9900"/>
+    <text x="30" y="45" font-family="Arial" font-size="40" text-anchor="middle" fill="white">λ</text>
+    <text x="30" y="80" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Lambda</text>
+  </g>
+  
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+</svg>

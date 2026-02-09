@@ -33,7 +33,7 @@ Traditional backend servers like EC2 must run continuously, even when no users a
 
 ## ⚡ Benefits of Lambda
 
-### 1. 🔥 Single purpose
+###  🔥 1. Single purpose
 
 Each AWS Lambda function is created to do one specific task only, such as user login, sending an email, or processing an order. This keeps the code simple, easy to debug, and easy to update without affecting other parts of the application.
 
@@ -173,12 +173,270 @@ When Lambda is triggered, the event information is passed to the function in JSO
 
 * Function processes one event at a time
 
+
+## ⭐ AWS Lambda Trigger Types (Complete Table)
+
+| Category              | Trigger / Service            | When Lambda Runs              | Real-world Example         |
+| --------------------- | ---------------------------- | ----------------------------- | -------------------------- |
+| **Storage**           | **S3**                       | Object created / deleted      | Resize image after upload  |
+| **Streaming**         | **Kinesis Data Streams**     | New record arrives            | Process live logs / clicks |
+| **Streaming**         | **DynamoDB Streams**         | Item insert / update / delete | Sync DB changes            |
+| **API / HTTP**        | **API Gateway (REST)**       | HTTP request                  | Backend API                |
+| **API / HTTP**        | **API Gateway (HTTP API)**   | HTTP request                  | Lightweight API            |
+| **API / HTTP**        | **Function URL**             | Direct HTTPS call             | Simple public endpoint     |
+| **Messaging**         | **SQS**                      | Message in queue              | Order processing           |
+| **Messaging**         | **SNS**                      | Notification published        | Send alerts                |
+| **Messaging**         | **Amazon MQ**                | Message arrives               | Legacy messaging           |
+| **Events / Schedule** | **EventBridge (Rules)**      | Pattern match event           | React to AWS events        |
+| **Events / Schedule** | **EventBridge (Schedule)**   | Cron / fixed time             | Daily job                  |
+| **Monitoring**        | **CloudWatch Logs**          | Log data arrives              | Log analysis               |
+| **Monitoring**        | **CloudWatch Alarms**        | Alarm state change            | Auto-remediation           |
+| **Security**          | **Cognito**                  | User sign-up / login          | User validation            |
+| **Security**          | **IAM**                      | Credential events             | Security automation        |
+| **DevOps**            | **CodeCommit**               | Code push                     | CI/CD pipeline             |
+| **DevOps**            | **CodePipeline**             | Pipeline stage                | Build automation           |
+| **DevOps**            | **CodeDeploy**               | Deployment events             | Deployment hooks           |
+| **IoT**               | **AWS IoT Core**             | Device message                | Sensor processing          |
+| **File Transfer**     | **AWS Transfer Family**      | File upload                   | SFTP workflows             |
+| **Email**             | **SES**                      | Email received                | Email parsing              |
+| **CDN / Edge**        | **CloudFront (Lambda@Edge)** | Viewer request                | Modify headers             |
+| **Containers**        | **ECR**                      | Image push                    | Security scan              |
+| **Manual / Testing**  | **Console Test**             | Manual click                  | Debugging                  |
+| **Manual / External** | **AWS SDK / CLI**            | API call                      | Programmatic invoke        |
+
+
 ## ⭐ Task
 
 Today, we are going to understand a simple real-time AWS Lambda use case where a user uploads a file to Amazon S3, and that upload automatically triggers an AWS Lambda function. The Lambda function then processes the file and produces an output, such as identifying or setting the correct content type. This shows how AWS Lambda works in an event-driven way without running any server.
 
-## ⚡ Creating a bucket in S3
+### ⚡ Creating a bucket in S3
 
 ![demo](../ASSETS/demo35.png)
 
 * It is important to create the S3 bucket in the same region as the Lambda function.
+
+## ⭐ Creating a Lambda function
+
+![demo](../ASSETS/demo36.png)
+
+### Author from scratch (Selected in the image)
+
+* Starts with a simple Hello World function
+
+* You write your own code from beginning
+
+* Best for beginners and real projects
+
+* Full control over logic and configuration
+
+* Most commonly used option
+
+### Use a blueprint
+
+* AWS provides ready-made templates
+
+* Includes sample code + trigger setup
+
+* Useful for quick demos and learning
+
+* Less flexibility than scratch
+
+* Example: API Gateway + Lambda template
+
+### Container image
+
+* Deploy Lambda using a Docker container
+
+* Supports large apps and custom runtimes
+
+* Requires container knowledge (ECR + Docker)
+
+* Used for advanced workloads (ML, heavy libs)
+
+* Not recommended for beginners
+
+### ⚡ Basic Information 
+
+![demo](../ASSETS/demo37.png)
+
+#### Function name 
+
+* This is the unique name of your Lambda function
+
+* Used to identify the function inside AWS
+
+* Must be:
+
+* 1–64 characters
+
+* No spaces
+
+* Allowed: letters, numbers, hyphens, underscores
+
+#### Runtime 
+
+* Supported runtimes include:
+
+* Node.js
+
+* Python
+
+* Java
+
+* Go
+
+* .NET
+
+* Ruby
+
+* PHP
+
+#### Durable execution (new)
+
+* Used for long-running or multi-step workflows
+
+* Automatically saves progress (checkpointing)
+
+* Can resume execution after failure or interruption
+
+* Useful for:
+
+    * Order processing pipelines
+
+    * Step-by-step data processing
+
+    * Costs extra (not free tier)
+
+### ⚡ Default Execution Role
+
+![demo](../ASSETS/demo38.png)
+
+* This screen is used to decide what your AWS Lambda function is allowed to access.
+
+* AWS Lambda itself cannot read S3, write logs, or access other services unless you give permission. These permissions are given using an execution role (IAM role).
+
+* role name - `shopwithameer-s3-role`
+
+* Amazon S3 object read-only permissions
+
+    * Read files from S3 buckets
+
+    * Does NOT allow:
+
+    * Uploading
+
+    * Deleting
+
+    * Modifying files
+
+### ⚡ Code for Nodejs S3 Trigger
+
+```js
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import decodeURIComponent from "decode-uri-component";
+
+console.log("Loading function");
+
+// Create S3 client
+const s3 = new S3Client({});
+
+export const handler = async (event, context) => {
+  try {
+    // Get bucket name
+    const bucket = event.Records[0].s3.bucket.name;
+
+    // Get object key (decode + replace + with space)
+    const key = decodeURIComponent(
+      event.Records[0].s3.object.key.replace(/\+/g, " ")
+    );
+
+    // Get object metadata
+    const command = new GetObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    });
+
+    const response = await s3.send(command);
+
+    console.log("CONTENT TYPE:", response.ContentType);
+
+    return response.ContentType;
+
+  } catch (error) {
+    console.error(error);
+    console.error(
+      `Error getting object ${key} from bucket ${bucket}. Make sure they exist and are in the same region.`
+    );
+    throw error;
+  }
+};
+```
+
+![demo](../ASSETS/demo39.png)
+
+* Deploy the function
+
+### ⚡ Add  Trigger
+
+![demo](../ASSETS/demo40.png)
+
+In AWS Lambda, Add trigger means choosing what event will start (invoke) your Lambda function. Lambda does nothing by itself; it runs only when something happens. By clicking Add trigger, you connect your Lambda function to an AWS service (like S3, API Gateway, or EventBridge). Whenever that service generates an event—such as a file upload, an HTTP request, or a scheduled time—AWS automatically executes your Lambda function.
+
+![demo](../ASSETS/demo41.png)
+
+![demo](../ASSETS/demo42.png)
+
+* AWS Lambda function runs automatically whenever something happens in an S3 bucket.
+
+#### 1️⃣ Trigger Type – S3
+
+* S3 is used as the trigger
+
+* Lambda runs asynchronously (background process)
+
+* No server or manual action needed
+
+#### 2️⃣ Bucket
+
+* Bucket name: `s3/shopwithameer`
+
+* Bucket region: ap-south-1
+
+* Bucket and Lambda must be in the same region (important rule)
+
+#### 3️⃣ Event Types (When Lambda Runs)
+
+*Your Lambda function will run when any file is created in the bucket:
+
+* PUT → Normal file upload
+
+* POST → File uploaded via form or API
+
+* COPY → File copied into the bucket
+
+* Multipart upload completed → Large file upload finished
+
+![demo](../ASSETS/demo43.png)
+
+This warning is telling you that your Lambda function should not write files back to the same S3 bucket that triggers it. If Lambda writes output files into the same bucket, S3 will treat that as a new upload and trigger Lambda again. This creates a loop (recursive invocation) where Lambda keeps calling itself repeatedly, which can quickly increase execution count, cost, and resource usage.
+
+![demo](../ASSETS/demo44.png)
+
+**s3 --> shopwithameer --> bucket --> properties**
+
+This screen shows that your S3 bucket is configured to send event notifications when something happens inside it. In your case, the bucket is set up so that whenever a new object (file) is created, S3 automatically sends an event to a Lambda function named `shopwithameer`. This allows the S3 bucket to trigger automation without manual intervention.
+
+![demo](../ASSETS/demo45.png)
+
+**Lambda --> Functions --> shopwithameer --> Configuration --> Permissions --> Return-based policy statements**
+
+This policy statement is a permission rule that allows Amazon S3 to invoke (call) your Lambda function. It clearly says that only the S3 service, only from your AWS account, and only from the specific bucket `shopwithameer` is allowed to trigger this Lambda. This keeps the setup secure and prevents unauthorized services or buckets from invoking your Lambda function.
+
+### ⚡ Upload File in S3
+
+![demo](../ASSETS/demo46.png)
+
+### ⚡ Monitor Cloudwatch Logs
+
+![demo](../ASSETS/demo47.png)
+
