@@ -440,3 +440,17 @@ This policy statement is a permission rule that allows Amazon S3 to invoke (call
 
 ![demo](../ASSETS/demo47.png)
 
+| **Metric Name**                 | **What it Means**                               | **What Your Screen Shows**        | **Simple Meaning**                 |
+| ------------------------------- | ----------------------------------------------- | --------------------------------- | ---------------------------------- |
+| **Invocations**                 | Number of times the Lambda function ran         | **1 invocation**                  | Lambda was triggered once          |
+| **Duration**                    | Time taken by Lambda to execute                 | **~219 ms (min/avg/max)**         | Function ran fast (under 1 second) |
+| **Error count & success rate**  | Number of failed executions and success %       | **1 error, success rate dropped** | One execution failed               |
+| **Throttles**                   | Times Lambda was blocked due to limits          | **0 throttles**                   | No traffic or limit issues         |
+| **Total concurrent executions** | How many Lambdas ran at the same time           | **Max 1**                         | Only one request at a time         |
+| **Recursive invocations**       | Lambda calling itself repeatedly                | **No data**                       | No recursive loop detected         |
+| **Async event age**             | Delay before async event was processed          | **~34 ms**                        | Events processed quickly           |
+| **Async events**                | Number of async events received                 | **1 received**                    | Async trigger worked fine          |
+| **Async delivery failures**     | Failures delivering async events                | **No data**                       | No async delivery problems         |
+| **Iterator age**                | Lag in stream-based triggers (Kinesis/DynamoDB) | **No data**                       | No stream trigger used             |
+
+![demo](../ASSETS/demo1.gif)
