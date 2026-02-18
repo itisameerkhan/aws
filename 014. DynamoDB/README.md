@@ -155,7 +155,6 @@ Write capacity depends on:
 
 ---
 
-
 ## ⭐ Creating a Table
 
 ![demo](../ASSETS/demo48.png)
